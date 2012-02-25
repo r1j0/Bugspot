@@ -11,38 +11,23 @@ import com.github.r1j0.bugspot.repository.SvnRepository;
 
 public class BugSpot {
 
-    public static void main(String[] args) {
+	public static void main(String[] args) {
+		String url = "http://svn.apache.org/repos/asf/hadoop/common/trunk/hadoop-common-project";
+		String username = "anonymous";
+		String password = "anonymous";
 
-	String url = "http://svn.apache.org/repos/asf/hadoop/common/trunk/hadoop-common-project";
-	String username = "anonymous";
-	String password = "anonymous";
+		Repository svnRepository = new SvnRepository(url, username, password);
+		// List<LogEntries> logEntries = svnRepository.checkout(500180,
+		// 1241260);
+		List<LogEntries> logEntries = svnRepository.checkout(1200180, 1241260);
 
-	Repository svnRepository = new SvnRepository(url, username, password);
-//	List<LogEntries> logEntries = svnRepository.checkout(500180, 1241260);
-	List<LogEntries> logEntries = svnRepository.checkout(1200180, 1241260);
-	
-	Computate computate = new Computate(logEntries);
-	computate.compute();
-	Map<String, Double> hotspots = computate.getHotspots();
-	
-	for (Entry<String,Double> entrySet : hotspots.entrySet()) {
-	    System.out.println("PATH: " + entrySet.getKey() + " VALUE: " + entrySet.getValue());
-	}
-	
-//	Pattern p = Pattern.compile("fix(es|ed)?|close(s|d)?", Pattern.CASE_INSENSITIVE);
-//	
-//	for (LogEntries logEntry : logEntries) {
-//	    System.out.println("------------");
-//	    System.out.println("AUTHOR: " + logEntry.getAuthor());
-//	    System.out.println("REVISION: " + logEntry.getRevision());
-//	    System.out.println("MESSAGE: " + logEntry.getMessage());
-//
-//	    Matcher matcher = p.matcher(logEntry.getMessage());
-//		    
-//	    if (matcher.find()) {
-//		System.out.println("YEPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPppp");
-//	    }
-//	}
+		Computate computate = new Computate(logEntries);
+		computate.compute();
+		Map<String, Double> hotspots = computate.getHotspots();
+
+		for (Entry<String, Double> entrySet : hotspots.entrySet()) {
+			System.out.println("PATH: " + entrySet.getKey() + " VALUE: " + entrySet.getValue());
+		}	
 
 	/**
 	 * <code>

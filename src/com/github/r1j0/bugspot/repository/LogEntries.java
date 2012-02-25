@@ -5,18 +5,18 @@ import java.util.Map;
 
 public interface LogEntries {
 
-    long getRevision();
+	long getRevision();
 
 
-    String getAuthor();
+	String getAuthor();
 
 
-    Date getDate();
+	Date getDate();
 
 
-    String getMessage();
+	String getMessage();
 
 
-    Map<String, String> getLogPath();
+	Map<String, String> getLogPath();
 
 }
