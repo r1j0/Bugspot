@@ -1,4 +1,4 @@
-package local.r1j0.bugspot;
+package com.github.r1j0.bugspot;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -8,7 +8,8 @@ import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import local.r1j0.bugspot.repository.LogEntries;
+import com.github.r1j0.bugspot.repository.LogEntries;
+
 
 public class Computate {
 

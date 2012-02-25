@@ -1,4 +1,4 @@
-package local.r1j0.bugspot.repository;
+package com.github.r1j0.bugspot.repository;
 
 import java.util.Date;
 import java.util.Map;

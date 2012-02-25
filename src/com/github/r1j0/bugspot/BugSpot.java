@@ -1,12 +1,13 @@
-package local.r1j0.bugspot;
+package com.github.r1j0.bugspot;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import local.r1j0.bugspot.repository.LogEntries;
-import local.r1j0.bugspot.repository.Repository;
-import local.r1j0.bugspot.repository.SvnRepository;
+import com.github.r1j0.bugspot.repository.LogEntries;
+import com.github.r1j0.bugspot.repository.Repository;
+import com.github.r1j0.bugspot.repository.SvnRepository;
+
 
 public class BugSpot {
 
