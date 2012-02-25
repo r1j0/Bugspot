@@ -12,7 +12,8 @@ import com.github.r1j0.bugspot.repository.LogEntries;
 
 public class Computate {
 
-	private final Pattern pattern = Pattern.compile("fix(es|ed)?|close(s|d)?", Pattern.CASE_INSENSITIVE);
+	private final Pattern fixesPattern = Pattern.compile("fix(es|ed)?|close(s|d)?", Pattern.CASE_INSENSITIVE);
+	private final Pattern ignorePattern = Pattern.compile(".*\\.txt|.*\\.xml", Pattern.CASE_INSENSITIVE);
 	private final List<LogEntries> logEntries;
 	private Map<String, Double> hotspots = new HashMap<String, Double>();
 
@@ -32,6 +33,12 @@ public class Computate {
 			for (Entry<String, String> entrySet : logPath.entrySet()) {
 				String fullPath = entrySet.getValue();
 
+				Matcher ignoreMatcher = ignorePattern.matcher(fullPath);
+
+				if (ignoreMatcher.matches()) {
+					continue;
+				}
+
 				Double bugSportValue = calculateBugSpot(lastEntry, logEntries, fullPath);
 				hotspots.put(fullPath, bugSportValue);
 			}
@@ -48,9 +55,9 @@ public class Computate {
 		final List<LogEntries> fixes = new ArrayList<LogEntries>();
 
 		for (LogEntries logEntry : logEntries) {
-			Matcher matcher = pattern.matcher(logEntry.getMessage());
+			Matcher fixesMatcher = fixesPattern.matcher(logEntry.getMessage());
 
-			if (matcher.find()) {
+			if (fixesMatcher.find()) {
 				fixes.add(logEntry);
 			}
 		}

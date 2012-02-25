@@ -17,8 +17,6 @@ public class BugSpot {
 		String password = "anonymous";
 
 		Repository svnRepository = new SvnRepository(url, username, password);
-		// List<LogEntries> logEntries = svnRepository.checkout(500180,
-		// 1241260);
 		List<LogEntries> logEntries = svnRepository.checkout(1200180, 1241260);
 
 		Computate computate = new Computate(logEntries);
