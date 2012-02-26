@@ -1,32 +1,32 @@
 package com.github.r1j0.bugspot;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
-import com.github.r1j0.bugspot.repository.GitRepository;
 import com.github.r1j0.bugspot.repository.LogEntries;
 import com.github.r1j0.bugspot.repository.Repository;
+import com.github.r1j0.bugspot.repository.SvnRepository;
 
 
-public class BugSpot {
+public class Bugspot {
 
 	public static void main(String[] args) {
 		String url = "http://svn.apache.org/repos/asf/hadoop/common/trunk/hadoop-common-project";
 		String username = "anonymous";
 		String password = "anonymous";
 
-//		Repository svnRepository = new SvnRepository(url, username, password);
-//		List<LogEntries> logEntries = svnRepository.checkout(1200180, 1241260);
-//
-//		Computate computate = new Computate(logEntries);
-//		computate.compute();
-//		Map<String, Double> hotspots = computate.getHotspots();
-//
-//		for (Entry<String, Double> entrySet : hotspots.entrySet()) {
-//			System.out.println("PATH: " + entrySet.getKey() + " VALUE: " + entrySet.getValue());
-//		}	
+		Repository svnRepository = new SvnRepository(url, username, password);
+		List<LogEntries> logEntries = svnRepository.checkout(1200180, 1241260);
 
-		Repository repository = new GitRepository(url, username, password);
-		List<LogEntries> checkout = repository.checkout(0);
+		Computate computate = new Computate(logEntries);
+		computate.compute();
+		Map<String, Double> hotspots = computate.getHotspots();
+
+		for (Entry<String, Double> entrySet : hotspots.entrySet()) {
+			System.out.println("PATH: " + entrySet.getKey() + " VALUE: " + entrySet.getValue());
+		}	
+
 		
 	/**
 	 * <code>
