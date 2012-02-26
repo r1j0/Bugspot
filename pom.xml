@@ -3,6 +3,7 @@
   <groupId>BugSpot</groupId>
   <artifactId>BugSpot</artifactId>
   <version>0.0.1-SNAPSHOT</version>
+  <packaging>jar</packaging>
   <dependencies>
   	<dependency>
   		<groupId>commons-cli</groupId>
@@ -20,4 +21,35 @@
   		<version>1.3.5</version>
   	</dependency>
   </dependencies>
+  <build>
+  	<plugins>
+  		<plugin>
+  			<groupId>org.apache.maven.plugins</groupId>
+  			<artifactId>maven-jar-plugin</artifactId>
+			<configuration>
+				<archive>
+					<manifest>
+						<mainClass>local.r1j0.bugspot.BugSpot</mainClass>
+					</manifest>
+				</archive>
+			</configuration>
+		</plugin>
+		
+		<plugin>
+			<groupId>org.apache.maven.plugins</groupId>
+			<artifactId>maven-shade-plugin</artifactId>
+			<executions>
+				<execution>
+					<phase>package</phase>
+					<goals>
+						<goal>shade</goal>
+					</goals>
+				</execution>
+			</executions>
+			<configuration>
+				<finalName>${artifactId}-${version}</finalName>
+			</configuration>
+		</plugin>
+	  </plugins>
+  </build>
 </project>
