@@ -20,15 +20,7 @@ public class Bugspot {
 
 	private static final String NAME = Bugspot.class.getSimpleName();
 
-
 	public static void main(String[] args) {
-		args = new String[] { "-h" };
-//		args = new String[] { "-url", "http://svn.apache.org/repos/asf/hadoop/common/trunk/hadoop-common-project", "-u", "anonymous", "-p", "anonymous" };
-		/**
-		 * <code>
-		 * args = new String[] { "-url", "http://svn.apache.org/repos/asf/hadoop/common/trunk/hadoop-common-project", "-u", "anonymous", "-p", "anonymous" };
-		 * </code>
-		 */
 		CommandLineParser parser = new PosixParser();
 		Options commandLineOptions = OptionsBuilder.build();
 		CommandLine line = null;
@@ -41,42 +33,31 @@ public class Bugspot {
 			System.exit(1);
 		}
 
-		checkConditions(line, commandLineOptions);
+		//checkConditions(line, commandLineOptions);
 		final Map<String, String> options = parseCommandLineOptions(line);
 
-		Repository repository = RepositoryFactory.getInstance(options.get("type"), options.get("url"), options.get("username"), options.get("password"));
-		List<LogEntries> logEntries = repository.checkout(1200180, 1241260);
+		Repository repository = RepositoryFactory.getInstance(options.get("type"), options.get("url"), options.get("username"), options.get("password")); 
+		List<LogEntries> logEntries = repository.checkout(Long.valueOf(options.get("from_rev")), Long.valueOf(options.get("to_rev")));
 
-		Computate computate = new Computate(logEntries);
-		computate.compute();
-		Map<String, Double> hotspots = computate.getHotspots();
-
-		for (Entry<String, Double> entrySet : hotspots.entrySet()) {
-			System.out.println("PATH: " + entrySet.getKey() + " VALUE: " + entrySet.getValue());
-		}
+//		Computate computate = new Computate(logEntries);
+//		computate.compute();
+//		Map<String, Double> hotspots = computate.getHotspots();
+//
+//		for (Entry<String, Double> entrySet : hotspots.entrySet()) {
+//			System.out.println("PATH: " + entrySet.getKey() + " VALUE: " + entrySet.getValue());
+//		}
 	}
 
 
 	private static Map<String, String> parseCommandLineOptions(final CommandLine line) {
 		final Map<String, String> options = new HashMap<String, String>();
-
 		options.put("url", line.getOptionValue("url"));
-		options.put("username", "anonymous");
-		options.put("password", "anonymous");
-		options.put("type", "svn");
-
-		if (line.hasOption("u")) {
-			options.put("username", line.getOptionValue("u"));
-		}
-
-		if (line.hasOption("p")) {
-			options.put("password", line.getOptionValue("p"));
-		}
-
-		if (line.hasOption("t")) {
-			options.put("type", line.getOptionValue("t"));
-		}
-
+		options.put("type", line.getOptionValue("t", "svn"));
+		options.put("username", line.getOptionValue("u", "anonymous"));
+		options.put("password", line.getOptionValue("p", ""));
+		String[] values = line.getOptionValues("r");
+		options.put("from_rev", values.length > 0 ? values[0] : "1");
+		options.put("to_rev", values.length > 1 ? values[1] : "HEAD");
 		return options;
 	}
 
@@ -101,6 +82,6 @@ public class Bugspot {
 
 	private static void printHelp(Options options) {
 		HelpFormatter formatter = new HelpFormatter();
-		formatter.printHelp(NAME, options);
+		formatter.printHelp(NAME, options, true);
 	}
 }
