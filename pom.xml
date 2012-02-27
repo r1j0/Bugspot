@@ -27,14 +27,16 @@
   	</dependency>
   </dependencies>
   <build>
+	<sourceDirectory>${basedir}/src</sourceDirectory>
   	<plugins>
   		<plugin>
   			<groupId>org.apache.maven.plugins</groupId>
   			<artifactId>maven-jar-plugin</artifactId>
+  			<version>2.4</version>
 			<configuration>
 				<archive>
 					<manifest>
-						<mainClass>local.r1j0.bugspot.BugSpot</mainClass>
+						<mainClass>com.github.r1j0.bugspot.Bugspot</mainClass>
 					</manifest>
 				</archive>
 			</configuration>
@@ -43,6 +45,7 @@
 		<plugin>
 			<groupId>org.apache.maven.plugins</groupId>
 			<artifactId>maven-shade-plugin</artifactId>
+  			<version>1.5</version>
 			<executions>
 				<execution>
 					<phase>package</phase>
@@ -52,7 +55,7 @@
 				</execution>
 			</executions>
 			<configuration>
-				<finalName>${artifactId}-${version}</finalName>
+				<finalName>uber-${project.artifactId}-${project.version}</finalName>
 			</configuration>
 		</plugin>
 	  </plugins>
