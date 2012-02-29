@@ -15,6 +15,7 @@ public class OptionsBuilder {
 		addUsernameOption(options);
 		addPasswordOption(options);
 		addRepositoryTypeOption(options);
+		addRevisionRangeOption(options);
 		return options;
 	}
 
@@ -24,6 +25,7 @@ public class OptionsBuilder {
 		OptionBuilder.withDescription("repository url");
 		OptionBuilder.hasArg();
 		OptionBuilder.withArgName("URL");
+		OptionBuilder.isRequired();
 		options.addOption(OptionBuilder.create("url"));
 	}
 
@@ -55,6 +57,17 @@ public class OptionsBuilder {
 		OptionBuilder.hasArg();
 		OptionBuilder.withArgName("TYPE");
 		options.addOption(OptionBuilder.create("t"));
+	}
+	
+	private static void addRevisionRangeOption(Options options) {
+		OptionBuilder.withArgName("r");
+		OptionBuilder.withLongOpt("revision");
+		OptionBuilder.withDescription("from revision[:to revision]");
+		OptionBuilder.hasArgs(2);
+		OptionBuilder.withValueSeparator(':');
+		OptionBuilder.withArgName("FROM_REV[:TO_REV]");
+		
+		options.addOption(OptionBuilder.create("r"));
 	}
 
 
