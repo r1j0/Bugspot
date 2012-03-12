@@ -22,12 +22,8 @@ public class SvnLogEntryHandler implements ISVNLogEntryHandler {
 	
 	private List<LogEntries> entries = new ArrayList<LogEntries>(); 
 	
-	public SvnLogEntryHandler() {
-		this(Pattern.compile("fix(es|ed)|crash|bug?", Pattern.CASE_INSENSITIVE));
-	}
-	
 	public SvnLogEntryHandler(Pattern message) {
-		this(message, Pattern.compile("^$"));
+		this(message != null ? message : Pattern.compile("BUG=.+", Pattern.CASE_INSENSITIVE), Pattern.compile("^$"));
 	}
 	
 	public SvnLogEntryHandler(Pattern message, Pattern exclude) {
@@ -42,9 +38,6 @@ public class SvnLogEntryHandler implements ISVNLogEntryHandler {
 	}
 	
 	public void handleLogEntry(SVNLogEntry logEntry) throws SVNException {
-		System.out.println("processing rev " + logEntry.getRevision());
-		System.out.println("--------------------------");
-		
 		if (message.matcher(logEntry.getMessage()).find()) {
 			Map<String, String> logPath = new HashMap<String, String>();
 			
@@ -62,7 +55,8 @@ public class SvnLogEntryHandler implements ISVNLogEntryHandler {
 				logEntry.getAuthor(),
 				logEntry.getDate(), 
 				logEntry.getMessage(),
-				logPath);
+				logPath
+			);
 			
 			entries.add(log);
 		}

@@ -16,6 +16,7 @@ public class OptionsBuilder {
 		addPasswordOption(options);
 		addRepositoryTypeOption(options);
 		addRevisionRangeOption(options);
+		addPatternOptions(options);
 		return options;
 	}
 
@@ -57,6 +58,15 @@ public class OptionsBuilder {
 		OptionBuilder.hasArg();
 		OptionBuilder.withArgName("TYPE");
 		options.addOption(OptionBuilder.create("t"));
+	}
+	
+	private static void addPatternOptions(Options options) {
+		OptionBuilder.withArgName("c");
+		OptionBuilder.withLongOpt("commit-pattern");
+		OptionBuilder.withDescription("pattern to determine a bugfix commit");
+		OptionBuilder.hasArg();
+		OptionBuilder.withArgName("PATTERN");
+		options.addOption(OptionBuilder.create("c"));
 	}
 	
 	private static void addRevisionRangeOption(Options options) {

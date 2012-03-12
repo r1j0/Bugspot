@@ -1,10 +1,9 @@
 package com.github.r1j0.bugspot.repository;
 
-import java.util.Collection;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import org.tmatesoft.svn.core.SVNException;
-import org.tmatesoft.svn.core.SVNLogEntry;
 import org.tmatesoft.svn.core.SVNURL;
 import org.tmatesoft.svn.core.auth.ISVNAuthenticationManager;
 import org.tmatesoft.svn.core.internal.io.dav.DAVRepositoryFactory;
@@ -35,54 +34,38 @@ public class SvnRepository implements Repository {
 	public List<LogEntries> checkout(long startRevision) {
 		return checkout(startRevision, HEAD_REVISION);
 	}
-
-
-	@SuppressWarnings("unchecked")
+	
+	
 	public List<LogEntries> checkout(long startRevision, long endRevision) {
+		return checkout(startRevision, HEAD_REVISION, null);
+	}
+	
+	
+	public List<LogEntries> checkout(long startRevision, long endRevision, Pattern commitPattern) {
 		SVNRepository repository = null;
 		
 		try {
 			repository = SVNRepositoryFactory.create(SVNURL.parseURIEncoded(url));
 		} catch (SVNException svne) {
 			System.err.println("Error for repository with location: " + url + ". Message: " + svne.getMessage());
-			System.exit(1);
+			return null;
 		}
 		
 		ISVNAuthenticationManager authManager = SVNWCUtil.createDefaultAuthenticationManager(username, password);
 		repository.setAuthenticationManager(authManager);
-		Collection<SVNLogEntry> svnLogEntries = null;
-		SvnLogEntryHandler handler = new SvnLogEntryHandler();
+		SvnLogEntryHandler handler = new SvnLogEntryHandler(commitPattern);
 		
 		try {
 			repository.log(new String[] { "" }, startRevision, endRevision, true, true, handler);
 		} catch (SVNException svne) {
 			System.out.println("Error retrieving log information for repository: " + url + ". Message: " + svne.getMessage());
-			System.exit(1);
+			return null;
 		}
 		
-//				List<LogEntries> logEntries = new ArrayList<LogEntries>();
-//
-//				for (Iterator<SVNLogEntry> entries = svnLogEntries.iterator(); entries.hasNext();) {
-//					SVNLogEntry logEntry = entries.next();
-//					Map<String, String> logPath = new HashMap<String, String>();
-//
-//					if (logEntry.getChangedPaths().size() > 0) {
-//						Set<SVNLogEntryPath> changedPathsSet = logEntry.getChangedPaths().keySet();
-//
-//						for (Iterator<SVNLogEntryPath> changedPaths = changedPathsSet.iterator(); changedPaths.hasNext();) {
-//							SVNLogEntryPath entryPath = (SVNLogEntryPath) logEntry.getChangedPaths().get(changedPaths.next());
-//							logPath.put(Character.toString(entryPath.getType()), entryPath.getPath());
-//						}
-//					}
-//
-//					logEntries.add(new LogEntriesImpl(logEntry.getRevision(), logEntry.getAuthor(), logEntry.getDate(), logEntry.getMessage(), logPath));
-//				}
-		
-		List<LogEntries> logEntries = handler.getEntries();
-		return logEntries;
+		return handler.getEntries();
 	}
-
-
+	
+	
 	private void setup() {
 		DAVRepositoryFactory.setup();
 		SVNRepositoryFactoryImpl.setup();

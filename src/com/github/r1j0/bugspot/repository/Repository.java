@@ -1,6 +1,7 @@
 package com.github.r1j0.bugspot.repository;
 
 import java.util.List;
+import java.util.regex.Pattern;
 
 public interface Repository {
 
@@ -26,4 +27,14 @@ public interface Repository {
 	 * @return log entries
 	 */
 	List<LogEntries> checkout(long startRevision, long endRevision);
+	
+	/**
+	 * checkout from startRevision to endRevision
+	 * 
+	 * @param startRevision
+	 * @param endRevision
+	 * @param commitPattern 
+	 * @return log entries
+	 */
+	List<LogEntries> checkout(long startRevision, long endRevision, Pattern commitPattern);
 }
