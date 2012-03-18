@@ -25,8 +25,4 @@ public class GitRepository implements Repository {
 	public List<LogEntries> checkout(long startRevision, long endRevision) {
 		throw new IllegalArgumentException("Not implemented yet.");
 	}
-	
-	public List<LogEntries> checkout(long startRevision, long endRevision, Pattern message) {
-		throw new IllegalArgumentException("Not implemented yet.");
-	}
 }

@@ -1,7 +1,6 @@
 package com.github.r1j0.bugspot.repository;
 
 import java.util.List;
-import java.util.regex.Pattern;
 
 import org.tmatesoft.svn.core.SVNException;
 import org.tmatesoft.svn.core.SVNURL;
@@ -37,11 +36,6 @@ public class SvnRepository implements Repository {
 	
 	
 	public List<LogEntries> checkout(long startRevision, long endRevision) {
-		return checkout(startRevision, HEAD_REVISION, null);
-	}
-	
-	
-	public List<LogEntries> checkout(long startRevision, long endRevision, Pattern commitPattern) {
 		SVNRepository repository = null;
 		
 		try {
@@ -53,7 +47,7 @@ public class SvnRepository implements Repository {
 		
 		ISVNAuthenticationManager authManager = SVNWCUtil.createDefaultAuthenticationManager(username, password);
 		repository.setAuthenticationManager(authManager);
-		SvnLogEntryHandler handler = new SvnLogEntryHandler(commitPattern);
+		SvnLogEntryHandler handler = new SvnLogEntryHandler();
 		
 		try {
 			repository.log(new String[] { "" }, startRevision, endRevision, true, true, handler);

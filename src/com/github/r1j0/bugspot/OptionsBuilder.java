@@ -8,25 +8,30 @@ public class OptionsBuilder {
 
 	public static Options build() {
 		Options options = new Options();
-
-		addHelpOption(options);
-		addVersionOption(options);
-		addUrlOption(options);
+		addPropertiesOption(options);
 		addUsernameOption(options);
 		addPasswordOption(options);
 		addRepositoryTypeOption(options);
+		addUrlOption(options);
 		addRevisionRangeOption(options);
-		addPatternOptions(options);
+		addHelpOption(options);
+		addVersionOption(options);
 		return options;
 	}
 
+	private static void addPropertiesOption(Options options) {
+		OptionBuilder.withDescription("config properties file");
+		OptionBuilder.hasArg();
+		OptionBuilder.withArgName("FILE");
+		OptionBuilder.isRequired();
+		options.addOption(OptionBuilder.create("c"));
+	}
 
 	private static void addUrlOption(Options options) {
 		OptionBuilder.withArgName("url");
 		OptionBuilder.withDescription("repository url");
 		OptionBuilder.hasArg();
 		OptionBuilder.withArgName("URL");
-		OptionBuilder.isRequired();
 		options.addOption(OptionBuilder.create("url"));
 	}
 
@@ -60,15 +65,6 @@ public class OptionsBuilder {
 		options.addOption(OptionBuilder.create("t"));
 	}
 	
-	private static void addPatternOptions(Options options) {
-		OptionBuilder.withArgName("c");
-		OptionBuilder.withLongOpt("commit-pattern");
-		OptionBuilder.withDescription("pattern to determine a bugfix commit");
-		OptionBuilder.hasArg();
-		OptionBuilder.withArgName("PATTERN");
-		options.addOption(OptionBuilder.create("c"));
-	}
-	
 	private static void addRevisionRangeOption(Options options) {
 		OptionBuilder.withArgName("r");
 		OptionBuilder.withLongOpt("revision");
@@ -76,7 +72,7 @@ public class OptionsBuilder {
 		OptionBuilder.hasArgs(2);
 		OptionBuilder.withValueSeparator(':');
 		OptionBuilder.withArgName("FROM_REV[:TO_REV]");
-		
+		OptionBuilder.isRequired();
 		options.addOption(OptionBuilder.create("r"));
 	}
 
