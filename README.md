@@ -9,7 +9,7 @@ Build using maven
 2. cp default.properties your-project.properties
 </pre>
 
-Edit the properties to your needs (e.g. redmine.properties).
+Edit the properties to your needs (e.g. create a redmine.properties).
 
 <pre>
 repository.type=svn
