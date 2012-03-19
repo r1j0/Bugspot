@@ -18,8 +18,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpException;
+import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.impl.client.DefaultHttpClient;
 
 import com.github.r1j0.bugspot.repository.LogEntries;
@@ -46,6 +48,15 @@ public class RedmineFilter implements Filter {
 				try {
 					HttpClient c = new DefaultHttpClient();
 					HttpGet req = new HttpGet(properties.getProperty("filter.RedmineFilter.base") + ticket + ".json");
+					
+					if (properties.containsKey("filter.RedmineFilter.username")) {
+						UsernamePasswordCredentials cred = new UsernamePasswordCredentials(
+							properties.getProperty("filter.RedmineFilter.username"),
+							properties.getProperty("filter.RedmineFilter.password")
+						);
+						
+						req.addHeader(BasicScheme.authenticate(cred, "US-ASCII", false));
+					}
 					HttpEntity entity = c.execute(req).getEntity();
 					BufferedReader r = new BufferedReader(new InputStreamReader(entity.getContent()));
 					JSONObject jsonObject = (JSONObject) JSONSerializer.toJSON(r.readLine());
