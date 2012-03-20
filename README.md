@@ -9,7 +9,7 @@ Build using maven
 2. cp default.properties your-project.properties
 </pre>
 
-Edit the properties to your needs (e.g. create a redmine.properties).
+Edit the properties file:
 
 <pre>
 repository.type=svn
@@ -33,6 +33,9 @@ filter.MessageFilter.commit = bug|fix(es)?|close(s|d)
 filter.RedmineFilter.ticket = #(\\d+)
 filter.RedmineFilter.base = http://www.redmine.org/issues/
 filter.RedmineFilter.tracker = Defect
+# if you need authentication
+# filter.RedmineFilter.username = user
+# filter.RedmineFilter.password = password
 </pre>
 
 Run the analyzer:
