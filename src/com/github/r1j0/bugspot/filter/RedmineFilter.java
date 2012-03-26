@@ -3,12 +3,22 @@ package com.github.r1j0.bugspot.filter;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.URI;
 import java.net.URISyntaxException;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.security.cert.CertificateException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+import javax.security.cert.X509Certificate;
 
 import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
@@ -21,8 +31,15 @@ import org.apache.http.HttpException;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.conn.ClientConnectionManager;
+import org.apache.http.conn.scheme.Scheme;
+import org.apache.http.conn.scheme.SchemeRegistry;
+import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.conn.SingleClientConnManager;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpParams;
 
 import com.github.r1j0.bugspot.repository.LogEntries;
 
@@ -38,6 +55,36 @@ public class RedmineFilter implements Filter {
 	public List<LogEntries> filter(List<LogEntries> logEntries, Properties properties) {
 		List<LogEntries> filtered = new ArrayList<LogEntries>();
 		Pattern ticketPattern = Pattern.compile(properties.getProperty("filter.RedmineFilter.ticket"));
+		HttpClient client = null;
+		
+		if (properties.getProperty("filter.RedmineFilter.insecure", "false").equals("true")) {
+			// more or less got that from 
+			// http://stackoverflow.com/questions/2703161/how-to-ignore-ssl-certificate-errors-in-apache-httpclient-4-0
+			SSLContext sslContext;
+			try {
+				sslContext = SSLContext.getInstance("SSL");
+				sslContext.init(null, new TrustManager[] { new X509TrustManager() {
+					public java.security.cert.X509Certificate[] getAcceptedIssuers() {return null;}
+					public void checkClientTrusted(java.security.cert.X509Certificate[] chain, String authType) throws CertificateException {}
+					public void checkServerTrusted(java.security.cert.X509Certificate[] chain, String authType) throws CertificateException {}
+				}}, new SecureRandom());
+				
+				SSLContext.setDefault(sslContext);
+				SSLSocketFactory sf = SSLSocketFactory.getSocketFactory();
+				Scheme httpsScheme = new Scheme("https", sf, 443);
+				SchemeRegistry schemeRegistry = new SchemeRegistry();
+				schemeRegistry.register(httpsScheme);
+				
+				HttpParams params = new BasicHttpParams();
+				ClientConnectionManager cm = new SingleClientConnManager(params, schemeRegistry);
+				client = new DefaultHttpClient(cm, params);
+			} catch (Exception e) {
+				log.fatal(e.getStackTrace());
+				System.exit(1);
+			} 
+		} else {
+			client = new DefaultHttpClient();
+		}
 		
 		for (LogEntries logEntry: logEntries) {
 			Matcher matcher = ticketPattern.matcher(logEntry.getMessage());
@@ -45,10 +92,10 @@ public class RedmineFilter implements Filter {
 			if (matcher.find()) {
 				// TODO capture all ticket references, not only the first one
 				String ticket = matcher.group(1);
+				
 				try {
-					HttpClient c = new DefaultHttpClient();
-					HttpGet req = new HttpGet(properties.getProperty("filter.RedmineFilter.base") + ticket + ".json");
-					
+					URI uri = new URI(properties.getProperty("filter.RedmineFilter.base") + ticket + ".json");
+					HttpGet req = new HttpGet(uri);
 					if (properties.containsKey("filter.RedmineFilter.username")) {
 						UsernamePasswordCredentials cred = new UsernamePasswordCredentials(
 							properties.getProperty("filter.RedmineFilter.username"),
@@ -57,7 +104,8 @@ public class RedmineFilter implements Filter {
 						
 						req.addHeader(BasicScheme.authenticate(cred, "US-ASCII", false));
 					}
-					HttpEntity entity = c.execute(req).getEntity();
+					
+					HttpEntity entity = client.execute(req).getEntity();
 					BufferedReader r = new BufferedReader(new InputStreamReader(entity.getContent()));
 					JSONObject jsonObject = (JSONObject) JSONSerializer.toJSON(r.readLine());
 					String tracker = jsonObject.getJSONObject("issue").getJSONObject("tracker").getString("name");
@@ -67,14 +115,8 @@ public class RedmineFilter implements Filter {
 						log.debug(tracker + " not configured as bug tracker ( does not match " + properties.getProperty("filter.RedmineFilter.tracker") +"), filter commit");
 						continue;
 					}
-				} catch (URISyntaxException e) {
-					log.warn(e.getMessage());
-				} catch (IOException e) {
-					log.warn(e.getMessage());
-				} catch (HttpException e) {
-					log.warn(e.getMessage());
-				} catch (JSONException e) {
-					log.warn("processed ticket " + ticket+". Got Error: " + e.getMessage());
+				} catch (Exception e) {
+					log.warn(e.getMessage() + ":"+ e.getStackTrace().toString());
 				}
 			} 
 			
