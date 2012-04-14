@@ -10,20 +10,19 @@ import java.util.regex.Pattern;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.github.r1j0.bugspot.filter.MessageFilter;
 import com.github.r1j0.bugspot.repository.LogEntries;
 
 /**
- * bug prediction as supposed by google
+ * Bug prediction as supposed by google
  * <link>http://google-engtools.blogspot.de/2011/12/bug-prediction-at-google.html</link>
  */
 public class GoogleBugAnalyzer implements Analyzer {
-	private static Log log = LogFactory.getLog(GoogleBugAnalyzer.class);
+	private static final Log log = LogFactory.getLog(GoogleBugAnalyzer.class);
 	
 	/**
 	 * Hotspot value for each file that occurred in a bugfix commit
 	 */
-	private Map<String, Double> hotspots = new HashMap<String, Double>();
+	private final Map<String, Double> hotspots = new HashMap<String, Double>();
 	
 	private Pattern include = Pattern.compile(".*", Pattern.CASE_INSENSITIVE);
 	private Pattern exclude = Pattern.compile("\\.txt|\\.xml$", Pattern.CASE_INSENSITIVE);
@@ -34,7 +33,8 @@ public class GoogleBugAnalyzer implements Analyzer {
 	private Double scale = 0.;
 	
 	public Map<String, Double> analyze(List<LogEntries> list, Long first) {
-		log.info("analyzing " + list.size() + " bug fixing commits");
+		log.info("Analyzing " + list.size() + " bug fixing commits");
+		
 		if (list.isEmpty()) {
 			return hotspots;
 		}
@@ -84,6 +84,7 @@ public class GoogleBugAnalyzer implements Analyzer {
 		return 1 / (1 + Math.exp((-12 * t) + 12));
 	}
 
+
 	public void setInclude(Pattern include) {
 		this.include = include;
 	}
@@ -92,5 +93,4 @@ public class GoogleBugAnalyzer implements Analyzer {
 	public void setExclude(Pattern exclude) {
 		this.exclude = exclude;
 	}
-
 }

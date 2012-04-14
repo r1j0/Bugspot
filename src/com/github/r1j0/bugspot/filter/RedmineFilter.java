@@ -1,12 +1,8 @@
 package com.github.r1j0.bugspot.filter;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URI;
-import java.net.URISyntaxException;
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.util.ArrayList;
@@ -18,16 +14,13 @@ import java.util.regex.Pattern;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
-import javax.security.cert.X509Certificate;
 
-import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
 import net.sf.json.JSONSerializer;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpEntity;
-import org.apache.http.HttpException;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
@@ -51,6 +44,7 @@ import com.github.r1j0.bugspot.repository.LogEntries;
  */
 public class RedmineFilter implements Filter {
 	private static Log log = LogFactory.getLog(FilterChain.class);
+
 	
 	public List<LogEntries> filter(List<LogEntries> logEntries, Properties properties) {
 		List<LogEntries> filtered = new ArrayList<LogEntries>();
@@ -61,6 +55,7 @@ public class RedmineFilter implements Filter {
 			// more or less got that from 
 			// http://stackoverflow.com/questions/2703161/how-to-ignore-ssl-certificate-errors-in-apache-httpclient-4-0
 			SSLContext sslContext;
+
 			try {
 				sslContext = SSLContext.getInstance("SSL");
 				sslContext.init(null, new TrustManager[] { new X509TrustManager() {
@@ -96,6 +91,7 @@ public class RedmineFilter implements Filter {
 				try {
 					URI uri = new URI(properties.getProperty("filter.RedmineFilter.base") + ticket + ".json");
 					HttpGet req = new HttpGet(uri);
+
 					if (properties.containsKey("filter.RedmineFilter.username")) {
 						UsernamePasswordCredentials cred = new UsernamePasswordCredentials(
 							properties.getProperty("filter.RedmineFilter.username"),
@@ -109,7 +105,7 @@ public class RedmineFilter implements Filter {
 					BufferedReader r = new BufferedReader(new InputStreamReader(entity.getContent()));
 					JSONObject jsonObject = (JSONObject) JSONSerializer.toJSON(r.readLine());
 					String tracker = jsonObject.getJSONObject("issue").getJSONObject("tracker").getString("name");
-					log.trace("found Ticket " + ticket + " (" + tracker + ") in: " + logEntry.getMessage());
+					log.trace("Found ticket " + ticket + " (" + tracker + ") in: " + logEntry.getMessage());
 					
 					if (!tracker.matches(properties.getProperty("filter.RedmineFilter.tracker"))) {
 						log.debug(tracker + " not configured as bug tracker ( does not match " + properties.getProperty("filter.RedmineFilter.tracker") +"), filter commit");

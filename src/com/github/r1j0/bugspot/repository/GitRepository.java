@@ -1,12 +1,14 @@
 package com.github.r1j0.bugspot.repository;
 
 import java.util.List;
-import java.util.regex.Pattern;
 
 public class GitRepository implements Repository {
 
+	@SuppressWarnings("unused")
 	private final String url;
+	@SuppressWarnings("unused")
 	private final String username;
+	@SuppressWarnings("unused")
 	private final String password;
 
 

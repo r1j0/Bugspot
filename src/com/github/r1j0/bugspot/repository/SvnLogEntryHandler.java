@@ -19,6 +19,7 @@ public class SvnLogEntryHandler implements ISVNLogEntryHandler {
 		Map<String, String> logPath = new HashMap<String, String>();
 		
 		if (logEntry.getChangedPaths().size() > 0) {
+			@SuppressWarnings("unchecked")
 			Set<SVNLogEntryPath> changedPathsSet = logEntry.getChangedPaths().keySet();
 			
 			for (Iterator<SVNLogEntryPath> changedPaths = changedPathsSet.iterator(); changedPaths.hasNext();) {
